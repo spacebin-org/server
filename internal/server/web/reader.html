@@ -23,6 +23,7 @@
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/static/normalize.css">
     <link rel="stylesheet" type="text/css" href="/static/global.css">
+    <link rel="stylesheet" type="text/css" href="/static/reader.css">
 
     {{.Analytics}}
 
@@ -76,8 +77,8 @@
         </p>
     </header>
 
-    <main>
-        <pre><code>{{.Highlighted}}</code></pre>
+    <main class="markdown-body">
+        {{.Content}}
     </main>
 </body>
 

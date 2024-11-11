@@ -154,3 +154,11 @@ h1 {
 .chroma {
     background-color: transparent !important;
 }
+
+.markdown-body {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-foreground);
+    margin: 0 auto;
+    padding: 0 25%;
+}

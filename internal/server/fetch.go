@@ -62,37 +62,57 @@ func (s *Server) StaticDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, err := template.ParseFS(resources, "web/document.html")
+	// Reader mode or code mode?
+	if r.URL.Query().Get("reader") != "" {
+		t, err := template.ParseFS(resources, "web/reader.html")
 
-	if err != nil {
-		util.RenderError(&resources, w, http.StatusInternalServerError, err)
-		return
-	}
+		if err != nil {
+			util.RenderError(&resources, w, http.StatusInternalServerError, err)
+			return
+		}
 
-	extension := ""
+		data := map[string]interface{}{
+			"Content":   document.Content,
+			"Analytics": template.HTML(config.Config.Analytics),
+		}
 
-	if len(params) == 2 {
-		extension = params[1]
-	}
+		if err := t.Execute(w, data); err != nil {
+			util.RenderError(&resources, w, http.StatusInternalServerError, err)
+			return
+		}
+	} else {
+		t, err := template.ParseFS(resources, "web/document.html")
 
-	highlighted, css, err := util.Highlight(document.Content, extension)
+		if err != nil {
+			util.RenderError(&resources, w, http.StatusInternalServerError, err)
+			return
+		}
 
-	if err != nil {
-		util.RenderError(&resources, w, http.StatusInternalServerError, err)
-		return
-	}
+		extension := ""
 
-	data := map[string]interface{}{
-		"Stylesheet":  template.CSS(css),
-		"Content":     document.Content,
-		"Highlighted": template.HTML(highlighted),
-		"Extension":   extension,
-		"Analytics":   template.HTML(config.Config.Analytics),
-	}
+		if len(params) == 2 {
+			extension = params[1]
+		}
 
-	if err := t.Execute(w, data); err != nil {
-		util.RenderError(&resources, w, http.StatusInternalServerError, err)
-		return
+		highlighted, css, err := util.Highlight(document.Content, extension)
+
+		if err != nil {
+			util.RenderError(&resources, w, http.StatusInternalServerError, err)
+			return
+		}
+
+		data := map[string]interface{}{
+			"Stylesheet":  template.CSS(css),
+			"Content":     document.Content,
+			"Highlighted": template.HTML(highlighted),
+			"Extension":   extension,
+			"Analytics":   template.HTML(config.Config.Analytics),
+		}
+
+		if err := t.Execute(w, data); err != nil {
+			util.RenderError(&resources, w, http.StatusInternalServerError, err)
+			return
+		}
 	}
 }
 
