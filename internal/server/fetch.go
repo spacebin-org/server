@@ -63,7 +63,7 @@ func (s *Server) StaticDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Reader mode or code mode?
-	if r.URL.Query().Get("reader") != "" {
+	if r.URL.Query().Get("reader") == "true" {
 		t, err := template.ParseFS(resources, "web/reader.html")
 
 		if err != nil {
@@ -71,8 +71,10 @@ func (s *Server) StaticDocument(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		content := util.ParseMarkdown([]byte(document.Content))
+
 		data := map[string]interface{}{
-			"Content":   document.Content,
+			"Content":   template.HTML(string(content)),
 			"Analytics": template.HTML(config.Config.Analytics),
 		}
 
