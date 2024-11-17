@@ -24,6 +24,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/lukewhrit/spacebin/internal/util"
 )
 
 type MySQL struct {
@@ -48,7 +49,19 @@ CREATE TABLE IF NOT EXISTS documents (
 	content TEXT NOT NULL,
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)`)
+);
+
+CREATE TABLE IF NOT EXISTS accounts (
+	id SERIAL PRIMARY KEY,
+	username varchar(255) NOT NULL,
+	password varchar(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+	public varchar(255) PRIMARY KEY,
+	token varchar(255) NOT NULL,
+	secret varchar
+);`)
 
 	return err
 }
@@ -78,10 +91,70 @@ func (m *MySQL) CreateDocument(ctx context.Context, id, content string) error {
 	return tx.Commit()
 }
 
-func (m *MySQL) GetAccount(ctx context.Context, id string) (Account, error)
-func (m *MySQL) CreateAccount(ctx context.Context, username, password string) error
-func (m *MySQL) UpdateAccount(ctx context.Context, id, username, password string) error
-func (m *MySQL) DeleteAccount(ctx context.Context, id string) error
+func (m *MySQL) GetAccount(ctx context.Context, id string) (Account, error) {
+	acc := new(Account)
+	row := m.QueryRow("SELECT * FROM accounts WHERE id=?", id)
+	err := row.Scan(&acc.ID, &acc.Username, &acc.Password)
 
-func (m *MySQL) GetSession(ctx context.Context, id string) (Session, error)
-func (m *MySQL) CreateSession(ctx context.Context, public, token, secret string) error
+	return *acc, err
+}
+
+func (m *MySQL) CreateAccount(ctx context.Context, username, password string) error {
+	tx, err := m.Begin()
+
+	if err != nil {
+		return err
+	}
+
+	// Add account to database
+	// Hash and salt the password
+	_, err = tx.Exec("INSERT INTO accounts (username, password) VALUES ($1, $2)",
+		username, util.HashAndSalt([]byte(password)))
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (m *MySQL) DeleteAccount(ctx context.Context, id string) error {
+	tx, err := m.Begin()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("DELETE FROM accounts WHERE id=$1", id)
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (m *MySQL) GetSession(ctx context.Context, id string) (Session, error) {
+	session := new(Session)
+	row := m.QueryRow("SELECT * FROM sessions WHERE id=$1", id)
+	err := row.Scan(&session.Public, &session.Token, &session.Secret)
+
+	return *session, err
+}
+
+func (m *MySQL) CreateSession(ctx context.Context, public, token, secret string) error {
+	tx, err := m.Begin()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("INSERT INTO sessions (public, token, secret) VALUES ($1, $2, $3)",
+		public, token, secret)
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}

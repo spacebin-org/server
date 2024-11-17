@@ -22,6 +22,7 @@ import (
 	"net/url"
 	"sync"
 
+	"github.com/lukewhrit/spacebin/internal/util"
 	_ "modernc.org/sqlite"
 )
 
@@ -43,6 +44,18 @@ CREATE TABLE IF NOT EXISTS documents (
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     usdated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS accounts (
+	id SERIAL PRIMARY KEY,
+	username varchar(255) NOT NULL,
+	password varchar(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+	public varchar(255) PRIMARY KEY,
+	token varchar(255) NOT NULL,
+	secret varchar
 );`)
 
 	return err
@@ -79,10 +92,85 @@ func (s *SQLite) CreateDocument(ctx context.Context, id, content string) error {
 	return tx.Commit()
 }
 
-func (s *SQLite) GetAccount(ctx context.Context, id string) (Account, error)
-func (s *SQLite) CreateAccount(ctx context.Context, username, password string) error
-func (s *SQLite) UpdateAccount(ctx context.Context, id, username, password string) error
-func (s *SQLite) DeleteAccount(ctx context.Context, id string) error
+func (s *SQLite) GetAccount(ctx context.Context, id string) (Account, error) {
+	s.RLock()
+	defer s.RUnlock()
 
-func (s *SQLite) GetSession(ctx context.Context, id string) (Session, error)
-func (s *SQLite) CreateSession(ctx context.Context, public, token, secret string) error
+	acc := new(Account)
+	row := s.QueryRow("SELECT * FROM accounts WHERE id=?", id)
+	err := row.Scan(&acc.ID, &acc.Username, &acc.Password)
+
+	return *acc, err
+}
+
+func (s *SQLite) CreateAccount(ctx context.Context, username, password string) error {
+	s.Lock()
+	defer s.Unlock()
+
+	tx, err := s.Begin()
+
+	if err != nil {
+		return err
+	}
+
+	// Add account to database
+	// Hash and salt the password
+	_, err = tx.Exec("INSERT INTO accounts (username, password) VALUES ($1, $2)",
+		username, util.HashAndSalt([]byte(password)))
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (s *SQLite) DeleteAccount(ctx context.Context, id string) error {
+	s.Lock()
+	defer s.Unlock()
+
+	tx, err := s.Begin()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("DELETE FROM accounts WHERE id=$1", id)
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (s *SQLite) GetSession(ctx context.Context, id string) (Session, error) {
+	s.RLock()
+	defer s.RUnlock()
+
+	session := new(Session)
+	row := s.QueryRow("SELECT * FROM sessions WHERE id=?", id)
+	err := row.Scan(&session.Public, &session.Token, &session.Secret)
+
+	return *session, err
+}
+
+func (s *SQLite) CreateSession(ctx context.Context, public, token, secret string) error {
+	s.Lock()
+	defer s.Unlock()
+
+	tx, err := s.Begin()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("INSERT INTO sessions (public, token, secret) VALUES ($1, $2, $3)",
+		public, token, secret)
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}

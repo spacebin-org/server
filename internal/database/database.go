@@ -31,10 +31,10 @@ type Document struct {
 }
 
 type Account struct {
-	ID        string     `db:"id" json:"id"`
-	Username  string     `db:"username" json:"username"`
-	Password  string     `db:"password" json:"password"`
-	Documents []Document `db:"documents" json:"documents"`
+	ID       string `db:"id" json:"id"`
+	Username string `db:"username" json:"username"`
+	Password string `db:"password" json:"password"`
+	// Documents []Document `db:"documents" json:"documents"`
 }
 
 type Session struct {
@@ -53,7 +53,7 @@ type Database interface {
 
 	GetAccount(ctx context.Context, id string) (Account, error)
 	CreateAccount(ctx context.Context, username, password string) error
-	UpdateAccount(ctx context.Context, id, username, password string) error
+	// UpdateAccount(ctx context.Context, id, username, password string) error
 	DeleteAccount(ctx context.Context, id string) error
 
 	GetSession(ctx context.Context, id string) (Session, error)
