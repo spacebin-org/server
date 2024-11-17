@@ -77,3 +77,11 @@ func (m *MySQL) CreateDocument(ctx context.Context, id, content string) error {
 
 	return tx.Commit()
 }
+
+func (m *MySQL) GetAccount(ctx context.Context, id string) (Account, error)
+func (m *MySQL) CreateAccount(ctx context.Context, username, password string) error
+func (m *MySQL) UpdateAccount(ctx context.Context, id, username, password string) error
+func (m *MySQL) DeleteAccount(ctx context.Context, id string) error
+
+func (m *MySQL) GetSession(ctx context.Context, id string) (Session, error)
+func (m *MySQL) CreateSession(ctx context.Context, public, token, secret string) error

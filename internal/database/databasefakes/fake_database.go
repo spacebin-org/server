@@ -19,6 +19,19 @@ type FakeDatabase struct {
 	closeReturnsOnCall map[int]struct {
 		result1 error
 	}
+	CreateAccountStub        func(context.Context, string, string) error
+	createAccountMutex       sync.RWMutex
+	createAccountArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+		arg3 string
+	}
+	createAccountReturns struct {
+		result1 error
+	}
+	createAccountReturnsOnCall map[int]struct {
+		result1 error
+	}
 	CreateDocumentStub        func(context.Context, string, string) error
 	createDocumentMutex       sync.RWMutex
 	createDocumentArgsForCall []struct {
@@ -31,6 +44,46 @@ type FakeDatabase struct {
 	}
 	createDocumentReturnsOnCall map[int]struct {
 		result1 error
+	}
+	CreateSessionStub        func(context.Context, string, string, string) error
+	createSessionMutex       sync.RWMutex
+	createSessionArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+		arg3 string
+		arg4 string
+	}
+	createSessionReturns struct {
+		result1 error
+	}
+	createSessionReturnsOnCall map[int]struct {
+		result1 error
+	}
+	DeleteAccountStub        func(context.Context, string) error
+	deleteAccountMutex       sync.RWMutex
+	deleteAccountArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+	}
+	deleteAccountReturns struct {
+		result1 error
+	}
+	deleteAccountReturnsOnCall map[int]struct {
+		result1 error
+	}
+	GetAccountStub        func(context.Context, string) (database.Account, error)
+	getAccountMutex       sync.RWMutex
+	getAccountArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+	}
+	getAccountReturns struct {
+		result1 database.Account
+		result2 error
+	}
+	getAccountReturnsOnCall map[int]struct {
+		result1 database.Account
+		result2 error
 	}
 	GetDocumentStub        func(context.Context, string) (database.Document, error)
 	getDocumentMutex       sync.RWMutex
@@ -46,6 +99,20 @@ type FakeDatabase struct {
 		result1 database.Document
 		result2 error
 	}
+	GetSessionStub        func(context.Context, string) (database.Session, error)
+	getSessionMutex       sync.RWMutex
+	getSessionArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+	}
+	getSessionReturns struct {
+		result1 database.Session
+		result2 error
+	}
+	getSessionReturnsOnCall map[int]struct {
+		result1 database.Session
+		result2 error
+	}
 	MigrateStub        func(context.Context) error
 	migrateMutex       sync.RWMutex
 	migrateArgsForCall []struct {
@@ -55,6 +122,20 @@ type FakeDatabase struct {
 		result1 error
 	}
 	migrateReturnsOnCall map[int]struct {
+		result1 error
+	}
+	UpdateAccountStub        func(context.Context, string, string, string) error
+	updateAccountMutex       sync.RWMutex
+	updateAccountArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+		arg3 string
+		arg4 string
+	}
+	updateAccountReturns struct {
+		result1 error
+	}
+	updateAccountReturnsOnCall map[int]struct {
 		result1 error
 	}
 	invocations      map[string][][]interface{}
@@ -110,6 +191,69 @@ func (fake *FakeDatabase) CloseReturnsOnCall(i int, result1 error) {
 		})
 	}
 	fake.closeReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeDatabase) CreateAccount(arg1 context.Context, arg2 string, arg3 string) error {
+	fake.createAccountMutex.Lock()
+	ret, specificReturn := fake.createAccountReturnsOnCall[len(fake.createAccountArgsForCall)]
+	fake.createAccountArgsForCall = append(fake.createAccountArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+		arg3 string
+	}{arg1, arg2, arg3})
+	stub := fake.CreateAccountStub
+	fakeReturns := fake.createAccountReturns
+	fake.recordInvocation("CreateAccount", []interface{}{arg1, arg2, arg3})
+	fake.createAccountMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeDatabase) CreateAccountCallCount() int {
+	fake.createAccountMutex.RLock()
+	defer fake.createAccountMutex.RUnlock()
+	return len(fake.createAccountArgsForCall)
+}
+
+func (fake *FakeDatabase) CreateAccountCalls(stub func(context.Context, string, string) error) {
+	fake.createAccountMutex.Lock()
+	defer fake.createAccountMutex.Unlock()
+	fake.CreateAccountStub = stub
+}
+
+func (fake *FakeDatabase) CreateAccountArgsForCall(i int) (context.Context, string, string) {
+	fake.createAccountMutex.RLock()
+	defer fake.createAccountMutex.RUnlock()
+	argsForCall := fake.createAccountArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeDatabase) CreateAccountReturns(result1 error) {
+	fake.createAccountMutex.Lock()
+	defer fake.createAccountMutex.Unlock()
+	fake.CreateAccountStub = nil
+	fake.createAccountReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeDatabase) CreateAccountReturnsOnCall(i int, result1 error) {
+	fake.createAccountMutex.Lock()
+	defer fake.createAccountMutex.Unlock()
+	fake.CreateAccountStub = nil
+	if fake.createAccountReturnsOnCall == nil {
+		fake.createAccountReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.createAccountReturnsOnCall[i] = struct {
 		result1 error
 	}{result1}
 }
@@ -177,6 +321,197 @@ func (fake *FakeDatabase) CreateDocumentReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeDatabase) CreateSession(arg1 context.Context, arg2 string, arg3 string, arg4 string) error {
+	fake.createSessionMutex.Lock()
+	ret, specificReturn := fake.createSessionReturnsOnCall[len(fake.createSessionArgsForCall)]
+	fake.createSessionArgsForCall = append(fake.createSessionArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+		arg3 string
+		arg4 string
+	}{arg1, arg2, arg3, arg4})
+	stub := fake.CreateSessionStub
+	fakeReturns := fake.createSessionReturns
+	fake.recordInvocation("CreateSession", []interface{}{arg1, arg2, arg3, arg4})
+	fake.createSessionMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeDatabase) CreateSessionCallCount() int {
+	fake.createSessionMutex.RLock()
+	defer fake.createSessionMutex.RUnlock()
+	return len(fake.createSessionArgsForCall)
+}
+
+func (fake *FakeDatabase) CreateSessionCalls(stub func(context.Context, string, string, string) error) {
+	fake.createSessionMutex.Lock()
+	defer fake.createSessionMutex.Unlock()
+	fake.CreateSessionStub = stub
+}
+
+func (fake *FakeDatabase) CreateSessionArgsForCall(i int) (context.Context, string, string, string) {
+	fake.createSessionMutex.RLock()
+	defer fake.createSessionMutex.RUnlock()
+	argsForCall := fake.createSessionArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+}
+
+func (fake *FakeDatabase) CreateSessionReturns(result1 error) {
+	fake.createSessionMutex.Lock()
+	defer fake.createSessionMutex.Unlock()
+	fake.CreateSessionStub = nil
+	fake.createSessionReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeDatabase) CreateSessionReturnsOnCall(i int, result1 error) {
+	fake.createSessionMutex.Lock()
+	defer fake.createSessionMutex.Unlock()
+	fake.CreateSessionStub = nil
+	if fake.createSessionReturnsOnCall == nil {
+		fake.createSessionReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.createSessionReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeDatabase) DeleteAccount(arg1 context.Context, arg2 string) error {
+	fake.deleteAccountMutex.Lock()
+	ret, specificReturn := fake.deleteAccountReturnsOnCall[len(fake.deleteAccountArgsForCall)]
+	fake.deleteAccountArgsForCall = append(fake.deleteAccountArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	stub := fake.DeleteAccountStub
+	fakeReturns := fake.deleteAccountReturns
+	fake.recordInvocation("DeleteAccount", []interface{}{arg1, arg2})
+	fake.deleteAccountMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeDatabase) DeleteAccountCallCount() int {
+	fake.deleteAccountMutex.RLock()
+	defer fake.deleteAccountMutex.RUnlock()
+	return len(fake.deleteAccountArgsForCall)
+}
+
+func (fake *FakeDatabase) DeleteAccountCalls(stub func(context.Context, string) error) {
+	fake.deleteAccountMutex.Lock()
+	defer fake.deleteAccountMutex.Unlock()
+	fake.DeleteAccountStub = stub
+}
+
+func (fake *FakeDatabase) DeleteAccountArgsForCall(i int) (context.Context, string) {
+	fake.deleteAccountMutex.RLock()
+	defer fake.deleteAccountMutex.RUnlock()
+	argsForCall := fake.deleteAccountArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeDatabase) DeleteAccountReturns(result1 error) {
+	fake.deleteAccountMutex.Lock()
+	defer fake.deleteAccountMutex.Unlock()
+	fake.DeleteAccountStub = nil
+	fake.deleteAccountReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeDatabase) DeleteAccountReturnsOnCall(i int, result1 error) {
+	fake.deleteAccountMutex.Lock()
+	defer fake.deleteAccountMutex.Unlock()
+	fake.DeleteAccountStub = nil
+	if fake.deleteAccountReturnsOnCall == nil {
+		fake.deleteAccountReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.deleteAccountReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeDatabase) GetAccount(arg1 context.Context, arg2 string) (database.Account, error) {
+	fake.getAccountMutex.Lock()
+	ret, specificReturn := fake.getAccountReturnsOnCall[len(fake.getAccountArgsForCall)]
+	fake.getAccountArgsForCall = append(fake.getAccountArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	stub := fake.GetAccountStub
+	fakeReturns := fake.getAccountReturns
+	fake.recordInvocation("GetAccount", []interface{}{arg1, arg2})
+	fake.getAccountMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeDatabase) GetAccountCallCount() int {
+	fake.getAccountMutex.RLock()
+	defer fake.getAccountMutex.RUnlock()
+	return len(fake.getAccountArgsForCall)
+}
+
+func (fake *FakeDatabase) GetAccountCalls(stub func(context.Context, string) (database.Account, error)) {
+	fake.getAccountMutex.Lock()
+	defer fake.getAccountMutex.Unlock()
+	fake.GetAccountStub = stub
+}
+
+func (fake *FakeDatabase) GetAccountArgsForCall(i int) (context.Context, string) {
+	fake.getAccountMutex.RLock()
+	defer fake.getAccountMutex.RUnlock()
+	argsForCall := fake.getAccountArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeDatabase) GetAccountReturns(result1 database.Account, result2 error) {
+	fake.getAccountMutex.Lock()
+	defer fake.getAccountMutex.Unlock()
+	fake.GetAccountStub = nil
+	fake.getAccountReturns = struct {
+		result1 database.Account
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeDatabase) GetAccountReturnsOnCall(i int, result1 database.Account, result2 error) {
+	fake.getAccountMutex.Lock()
+	defer fake.getAccountMutex.Unlock()
+	fake.GetAccountStub = nil
+	if fake.getAccountReturnsOnCall == nil {
+		fake.getAccountReturnsOnCall = make(map[int]struct {
+			result1 database.Account
+			result2 error
+		})
+	}
+	fake.getAccountReturnsOnCall[i] = struct {
+		result1 database.Account
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeDatabase) GetDocument(arg1 context.Context, arg2 string) (database.Document, error) {
 	fake.getDocumentMutex.Lock()
 	ret, specificReturn := fake.getDocumentReturnsOnCall[len(fake.getDocumentArgsForCall)]
@@ -242,6 +577,71 @@ func (fake *FakeDatabase) GetDocumentReturnsOnCall(i int, result1 database.Docum
 	}{result1, result2}
 }
 
+func (fake *FakeDatabase) GetSession(arg1 context.Context, arg2 string) (database.Session, error) {
+	fake.getSessionMutex.Lock()
+	ret, specificReturn := fake.getSessionReturnsOnCall[len(fake.getSessionArgsForCall)]
+	fake.getSessionArgsForCall = append(fake.getSessionArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	stub := fake.GetSessionStub
+	fakeReturns := fake.getSessionReturns
+	fake.recordInvocation("GetSession", []interface{}{arg1, arg2})
+	fake.getSessionMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeDatabase) GetSessionCallCount() int {
+	fake.getSessionMutex.RLock()
+	defer fake.getSessionMutex.RUnlock()
+	return len(fake.getSessionArgsForCall)
+}
+
+func (fake *FakeDatabase) GetSessionCalls(stub func(context.Context, string) (database.Session, error)) {
+	fake.getSessionMutex.Lock()
+	defer fake.getSessionMutex.Unlock()
+	fake.GetSessionStub = stub
+}
+
+func (fake *FakeDatabase) GetSessionArgsForCall(i int) (context.Context, string) {
+	fake.getSessionMutex.RLock()
+	defer fake.getSessionMutex.RUnlock()
+	argsForCall := fake.getSessionArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeDatabase) GetSessionReturns(result1 database.Session, result2 error) {
+	fake.getSessionMutex.Lock()
+	defer fake.getSessionMutex.Unlock()
+	fake.GetSessionStub = nil
+	fake.getSessionReturns = struct {
+		result1 database.Session
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeDatabase) GetSessionReturnsOnCall(i int, result1 database.Session, result2 error) {
+	fake.getSessionMutex.Lock()
+	defer fake.getSessionMutex.Unlock()
+	fake.GetSessionStub = nil
+	if fake.getSessionReturnsOnCall == nil {
+		fake.getSessionReturnsOnCall = make(map[int]struct {
+			result1 database.Session
+			result2 error
+		})
+	}
+	fake.getSessionReturnsOnCall[i] = struct {
+		result1 database.Session
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeDatabase) Migrate(arg1 context.Context) error {
 	fake.migrateMutex.Lock()
 	ret, specificReturn := fake.migrateReturnsOnCall[len(fake.migrateArgsForCall)]
@@ -303,17 +703,93 @@ func (fake *FakeDatabase) MigrateReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeDatabase) UpdateAccount(arg1 context.Context, arg2 string, arg3 string, arg4 string) error {
+	fake.updateAccountMutex.Lock()
+	ret, specificReturn := fake.updateAccountReturnsOnCall[len(fake.updateAccountArgsForCall)]
+	fake.updateAccountArgsForCall = append(fake.updateAccountArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+		arg3 string
+		arg4 string
+	}{arg1, arg2, arg3, arg4})
+	stub := fake.UpdateAccountStub
+	fakeReturns := fake.updateAccountReturns
+	fake.recordInvocation("UpdateAccount", []interface{}{arg1, arg2, arg3, arg4})
+	fake.updateAccountMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeDatabase) UpdateAccountCallCount() int {
+	fake.updateAccountMutex.RLock()
+	defer fake.updateAccountMutex.RUnlock()
+	return len(fake.updateAccountArgsForCall)
+}
+
+func (fake *FakeDatabase) UpdateAccountCalls(stub func(context.Context, string, string, string) error) {
+	fake.updateAccountMutex.Lock()
+	defer fake.updateAccountMutex.Unlock()
+	fake.UpdateAccountStub = stub
+}
+
+func (fake *FakeDatabase) UpdateAccountArgsForCall(i int) (context.Context, string, string, string) {
+	fake.updateAccountMutex.RLock()
+	defer fake.updateAccountMutex.RUnlock()
+	argsForCall := fake.updateAccountArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+}
+
+func (fake *FakeDatabase) UpdateAccountReturns(result1 error) {
+	fake.updateAccountMutex.Lock()
+	defer fake.updateAccountMutex.Unlock()
+	fake.UpdateAccountStub = nil
+	fake.updateAccountReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeDatabase) UpdateAccountReturnsOnCall(i int, result1 error) {
+	fake.updateAccountMutex.Lock()
+	defer fake.updateAccountMutex.Unlock()
+	fake.UpdateAccountStub = nil
+	if fake.updateAccountReturnsOnCall == nil {
+		fake.updateAccountReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.updateAccountReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeDatabase) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.closeMutex.RLock()
 	defer fake.closeMutex.RUnlock()
+	fake.createAccountMutex.RLock()
+	defer fake.createAccountMutex.RUnlock()
 	fake.createDocumentMutex.RLock()
 	defer fake.createDocumentMutex.RUnlock()
+	fake.createSessionMutex.RLock()
+	defer fake.createSessionMutex.RUnlock()
+	fake.deleteAccountMutex.RLock()
+	defer fake.deleteAccountMutex.RUnlock()
+	fake.getAccountMutex.RLock()
+	defer fake.getAccountMutex.RUnlock()
 	fake.getDocumentMutex.RLock()
 	defer fake.getDocumentMutex.RUnlock()
+	fake.getSessionMutex.RLock()
+	defer fake.getSessionMutex.RUnlock()
 	fake.migrateMutex.RLock()
 	defer fake.migrateMutex.RUnlock()
+	fake.updateAccountMutex.RLock()
+	defer fake.updateAccountMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

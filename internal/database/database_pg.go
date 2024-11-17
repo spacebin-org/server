@@ -70,3 +70,11 @@ func (p *Postgres) CreateDocument(ctx context.Context, id, content string) error
 
 	return tx.Commit()
 }
+
+func (p *Postgres) GetAccount(ctx context.Context, id string) (Account, error)
+func (p *Postgres) CreateAccount(ctx context.Context, username, password string) error
+func (p *Postgres) UpdateAccount(ctx context.Context, id, username, password string) error
+func (p *Postgres) DeleteAccount(ctx context.Context, id string) error
+
+func (p *Postgres) GetSession(ctx context.Context, id string) (Session, error)
+func (p *Postgres) CreateSession(ctx context.Context, public, token, secret string) error
