@@ -85,6 +85,20 @@ type FakeDatabase struct {
 		result1 database.Account
 		result2 error
 	}
+	GetAccountByUsernameStub        func(context.Context, string) (database.Account, error)
+	getAccountByUsernameMutex       sync.RWMutex
+	getAccountByUsernameArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+	}
+	getAccountByUsernameReturns struct {
+		result1 database.Account
+		result2 error
+	}
+	getAccountByUsernameReturnsOnCall map[int]struct {
+		result1 database.Account
+		result2 error
+	}
 	GetDocumentStub        func(context.Context, string) (database.Document, error)
 	getDocumentMutex       sync.RWMutex
 	getDocumentArgsForCall []struct {
@@ -122,20 +136,6 @@ type FakeDatabase struct {
 		result1 error
 	}
 	migrateReturnsOnCall map[int]struct {
-		result1 error
-	}
-	UpdateAccountStub        func(context.Context, string, string, string) error
-	updateAccountMutex       sync.RWMutex
-	updateAccountArgsForCall []struct {
-		arg1 context.Context
-		arg2 string
-		arg3 string
-		arg4 string
-	}
-	updateAccountReturns struct {
-		result1 error
-	}
-	updateAccountReturnsOnCall map[int]struct {
 		result1 error
 	}
 	invocations      map[string][][]interface{}
@@ -512,6 +512,71 @@ func (fake *FakeDatabase) GetAccountReturnsOnCall(i int, result1 database.Accoun
 	}{result1, result2}
 }
 
+func (fake *FakeDatabase) GetAccountByUsername(arg1 context.Context, arg2 string) (database.Account, error) {
+	fake.getAccountByUsernameMutex.Lock()
+	ret, specificReturn := fake.getAccountByUsernameReturnsOnCall[len(fake.getAccountByUsernameArgsForCall)]
+	fake.getAccountByUsernameArgsForCall = append(fake.getAccountByUsernameArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	stub := fake.GetAccountByUsernameStub
+	fakeReturns := fake.getAccountByUsernameReturns
+	fake.recordInvocation("GetAccountByUsername", []interface{}{arg1, arg2})
+	fake.getAccountByUsernameMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeDatabase) GetAccountByUsernameCallCount() int {
+	fake.getAccountByUsernameMutex.RLock()
+	defer fake.getAccountByUsernameMutex.RUnlock()
+	return len(fake.getAccountByUsernameArgsForCall)
+}
+
+func (fake *FakeDatabase) GetAccountByUsernameCalls(stub func(context.Context, string) (database.Account, error)) {
+	fake.getAccountByUsernameMutex.Lock()
+	defer fake.getAccountByUsernameMutex.Unlock()
+	fake.GetAccountByUsernameStub = stub
+}
+
+func (fake *FakeDatabase) GetAccountByUsernameArgsForCall(i int) (context.Context, string) {
+	fake.getAccountByUsernameMutex.RLock()
+	defer fake.getAccountByUsernameMutex.RUnlock()
+	argsForCall := fake.getAccountByUsernameArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeDatabase) GetAccountByUsernameReturns(result1 database.Account, result2 error) {
+	fake.getAccountByUsernameMutex.Lock()
+	defer fake.getAccountByUsernameMutex.Unlock()
+	fake.GetAccountByUsernameStub = nil
+	fake.getAccountByUsernameReturns = struct {
+		result1 database.Account
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeDatabase) GetAccountByUsernameReturnsOnCall(i int, result1 database.Account, result2 error) {
+	fake.getAccountByUsernameMutex.Lock()
+	defer fake.getAccountByUsernameMutex.Unlock()
+	fake.GetAccountByUsernameStub = nil
+	if fake.getAccountByUsernameReturnsOnCall == nil {
+		fake.getAccountByUsernameReturnsOnCall = make(map[int]struct {
+			result1 database.Account
+			result2 error
+		})
+	}
+	fake.getAccountByUsernameReturnsOnCall[i] = struct {
+		result1 database.Account
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeDatabase) GetDocument(arg1 context.Context, arg2 string) (database.Document, error) {
 	fake.getDocumentMutex.Lock()
 	ret, specificReturn := fake.getDocumentReturnsOnCall[len(fake.getDocumentArgsForCall)]
@@ -703,70 +768,6 @@ func (fake *FakeDatabase) MigrateReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeDatabase) UpdateAccount(arg1 context.Context, arg2 string, arg3 string, arg4 string) error {
-	fake.updateAccountMutex.Lock()
-	ret, specificReturn := fake.updateAccountReturnsOnCall[len(fake.updateAccountArgsForCall)]
-	fake.updateAccountArgsForCall = append(fake.updateAccountArgsForCall, struct {
-		arg1 context.Context
-		arg2 string
-		arg3 string
-		arg4 string
-	}{arg1, arg2, arg3, arg4})
-	stub := fake.UpdateAccountStub
-	fakeReturns := fake.updateAccountReturns
-	fake.recordInvocation("UpdateAccount", []interface{}{arg1, arg2, arg3, arg4})
-	fake.updateAccountMutex.Unlock()
-	if stub != nil {
-		return stub(arg1, arg2, arg3, arg4)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fakeReturns.result1
-}
-
-func (fake *FakeDatabase) UpdateAccountCallCount() int {
-	fake.updateAccountMutex.RLock()
-	defer fake.updateAccountMutex.RUnlock()
-	return len(fake.updateAccountArgsForCall)
-}
-
-func (fake *FakeDatabase) UpdateAccountCalls(stub func(context.Context, string, string, string) error) {
-	fake.updateAccountMutex.Lock()
-	defer fake.updateAccountMutex.Unlock()
-	fake.UpdateAccountStub = stub
-}
-
-func (fake *FakeDatabase) UpdateAccountArgsForCall(i int) (context.Context, string, string, string) {
-	fake.updateAccountMutex.RLock()
-	defer fake.updateAccountMutex.RUnlock()
-	argsForCall := fake.updateAccountArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
-}
-
-func (fake *FakeDatabase) UpdateAccountReturns(result1 error) {
-	fake.updateAccountMutex.Lock()
-	defer fake.updateAccountMutex.Unlock()
-	fake.UpdateAccountStub = nil
-	fake.updateAccountReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeDatabase) UpdateAccountReturnsOnCall(i int, result1 error) {
-	fake.updateAccountMutex.Lock()
-	defer fake.updateAccountMutex.Unlock()
-	fake.UpdateAccountStub = nil
-	if fake.updateAccountReturnsOnCall == nil {
-		fake.updateAccountReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.updateAccountReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
 func (fake *FakeDatabase) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -782,14 +783,14 @@ func (fake *FakeDatabase) Invocations() map[string][][]interface{} {
 	defer fake.deleteAccountMutex.RUnlock()
 	fake.getAccountMutex.RLock()
 	defer fake.getAccountMutex.RUnlock()
+	fake.getAccountByUsernameMutex.RLock()
+	defer fake.getAccountByUsernameMutex.RUnlock()
 	fake.getDocumentMutex.RLock()
 	defer fake.getDocumentMutex.RUnlock()
 	fake.getSessionMutex.RLock()
 	defer fake.getSessionMutex.RUnlock()
 	fake.migrateMutex.RLock()
 	defer fake.migrateMutex.RUnlock()
-	fake.updateAccountMutex.RLock()
-	defer fake.updateAccountMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

@@ -9,13 +9,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Token struct {
-	Version string
-	Public  string
-	Secret  string
-	Salt    string
-}
-
 func HashAndSalt(pwd []byte) string {
 	// Use GenerateFromPassword to hash & salt pwd.
 	// MinCost is just an integer constant provided by the bcrypt

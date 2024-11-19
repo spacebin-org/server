@@ -92,6 +92,14 @@ func (p *Postgres) GetAccount(ctx context.Context, id string) (Account, error) {
 	return *account, err
 }
 
+func (p *Postgres) GetAccountByUsername(ctx context.Context, username string) (Account, error) {
+	account := new(Account)
+	row := p.QueryRow("SELECT * FROM accounts WHERE username=$1", username)
+	err := row.Scan(&account.ID, &account.Username, &account.Password)
+
+	return *account, err
+}
+
 func (p *Postgres) CreateAccount(ctx context.Context, username, password string) error {
 	tx, err := p.Begin()
 

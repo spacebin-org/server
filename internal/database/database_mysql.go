@@ -45,22 +45,27 @@ func NewMySQL(uri *url.URL) (Database, error) {
 func (m *MySQL) Migrate(ctx context.Context) error {
 	_, err := m.Exec(`
 CREATE TABLE IF NOT EXISTS documents (
-	id VARCHAR(255) PRIMARY KEY,
+	id VARCHAR(255) NOT NULL,
 	content TEXT NOT NULL,
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+	PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS accounts (
-	id SERIAL PRIMARY KEY,
-	username varchar(255) NOT NULL,
-	password varchar(255) NOT NULL
+	id INT NOT NULL AUTO_INCREMENT,
+	username VARCHAR(255) NOT NULL,
+	password VARCHAR(255) NOT NULL,
+
+	PRIMARY_KEY(id)
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
-	public varchar(255) PRIMARY KEY,
-	token varchar(255) NOT NULL,
-	secret varchar
+	public VARCHAR(255) NOT NULL,
+	token VARCHAR(255) NOT NULL,
+	secret TEXT NOT NULL,
+	PRIMARY_KEY(public)
 );`)
 
 	return err
@@ -97,6 +102,14 @@ func (m *MySQL) GetAccount(ctx context.Context, id string) (Account, error) {
 	err := row.Scan(&acc.ID, &acc.Username, &acc.Password)
 
 	return *acc, err
+}
+
+func (m *MySQL) GetAccountByUsername(ctx context.Context, username string) (Account, error) {
+	account := new(Account)
+	row := m.QueryRow("SELECT * FROM accounts WHERE username=$1", username)
+	err := row.Scan(&account.ID, &account.Username, &account.Password)
+
+	return *account, err
 }
 
 func (m *MySQL) CreateAccount(ctx context.Context, username, password string) error {

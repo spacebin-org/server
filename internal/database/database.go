@@ -31,7 +31,7 @@ type Document struct {
 }
 
 type Account struct {
-	ID       string `db:"id" json:"id"`
+	ID       int    `db:"id" json:"id"`
 	Username string `db:"username" json:"username"`
 	Password string `db:"password" json:"password"`
 	// Documents []Document `db:"documents" json:"documents"`
@@ -52,6 +52,7 @@ type Database interface {
 	CreateDocument(ctx context.Context, id, content string) error
 
 	GetAccount(ctx context.Context, id string) (Account, error)
+	GetAccountByUsername(ctx context.Context, username string) (Account, error)
 	CreateAccount(ctx context.Context, username, password string) error
 	// UpdateAccount(ctx context.Context, id, username, password string) error
 	DeleteAccount(ctx context.Context, id string) error

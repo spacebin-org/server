@@ -47,15 +47,15 @@ CREATE TABLE IF NOT EXISTS documents (
 );
 
 CREATE TABLE IF NOT EXISTS accounts (
-	id SERIAL PRIMARY KEY,
-	username varchar(255) NOT NULL,
-	password varchar(255) NOT NULL
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	username TEXT NOT NULL,
+	password TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
-	public varchar(255) PRIMARY KEY,
-	token varchar(255) NOT NULL,
-	secret varchar
+	public TEXT PRIMARY KEY,
+	token TEXT NOT NULL,
+	secret TEXT NOT NULL
 );`)
 
 	return err
@@ -97,10 +97,18 @@ func (s *SQLite) GetAccount(ctx context.Context, id string) (Account, error) {
 	defer s.RUnlock()
 
 	acc := new(Account)
-	row := s.QueryRow("SELECT * FROM accounts WHERE id=?", id)
+	row := s.QueryRow("SELECT * FROM accounts WHERE id=$1", id)
 	err := row.Scan(&acc.ID, &acc.Username, &acc.Password)
 
 	return *acc, err
+}
+
+func (s *SQLite) GetAccountByUsername(ctx context.Context, username string) (Account, error) {
+	account := new(Account)
+	row := s.QueryRow("SELECT * FROM accounts WHERE username=$1", username)
+	err := row.Scan(&account.ID, &account.Username, &account.Password)
+
+	return *account, err
 }
 
 func (s *SQLite) CreateAccount(ctx context.Context, username, password string) error {

@@ -29,10 +29,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type CreateRequest struct {
-	Content string
-}
-
 func ValidateBody(maxSize int, body CreateRequest) error {
 	return validation.ValidateStruct(&body,
 		validation.Field(&body.Content, validation.Required,
