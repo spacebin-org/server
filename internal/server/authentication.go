@@ -17,6 +17,7 @@ func (s *Server) SignUp(w http.ResponseWriter, r *http.Request) {
 		Username: "luke",
 		Password: "password",
 	}
+
 	// Do validation
 	// Make sure password is secure, make sure username does not exist
 
